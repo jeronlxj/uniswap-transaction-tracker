@@ -20,6 +20,16 @@ def fetch_transactions():
         return response.json().get('result', [])
     return []
 
+def save_transactions(transactions):
+    for txn in transactions:
+        transaction = Transaction(
+            hash=txn['hash'],
+            fee_usdt=float(txn['value']),  
+            timestamp=datetime.fromtimestamp(int(txn['timeStamp']))
+        )
+        db.session.merge(transaction) 
+    db.session.commit()
+
 @app.route('/api/txns', methods=['GET'])
 def get_transactions():
     hash = request.args.get('hash', None)
@@ -28,33 +38,34 @@ def get_transactions():
     page = int(request.args.get('page', 1))
     page_size = int(request.args.get('pageSize', 50))
 
-    # Fetch all transactions from Etherscan
-    transactions = fetch_transactions()
+    query = Transaction.query
 
-    # Filter transactions by hash
     if hash:
-        transactions = [txn for txn in transactions if txn['hash'] == hash]
+        query = query.filter(Transaction.hash == hash)
 
-    # Filter transactions by date range (timestamp)
     if start_date:
         start_timestamp = datetime.strptime(start_date, "%Y-%m-%d").timestamp()
-        transactions = [txn for txn in transactions if int(txn['timeStamp']) >= start_timestamp]
-    
+        query = query.filter(Transaction.timestamp >= datetime.fromtimestamp(start_timestamp))
+
     if end_date:
         end_timestamp = datetime.strptime(end_date, "%Y-%m-%d").timestamp()
-        transactions = [txn for txn in transactions if int(txn['timeStamp']) <= end_timestamp]
+        query = query.filter(Transaction.timestamp <= datetime.fromtimestamp(end_timestamp))
 
-    # Paginate results
-    total = len(transactions)
-    start_index = (page - 1) * page_size
-    end_index = start_index + page_size
-    paginated_transactions = transactions[start_index:end_index]
+    total = query.count()
+    transactions = query.order_by(Transaction.timestamp.desc()).offset((page - 1) * page_size).limit(page_size).all()
 
     return jsonify({
         'total': total,
         'page': page,
         'pageSize': page_size,
-        'transactions': paginated_transactions
+        'transactions': transactions
+    })
+
+@app.route('/api/summary', methods=['GET'])
+def get_summary():
+    total_usdt = db.session.query(db.func.sum(Transaction.fee_usdt)).scalar() or 0
+    return jsonify({
+        'total_usdt': total_usdt,
     })
 
 @app.route('/api/eth-now', methods=['GET'])
