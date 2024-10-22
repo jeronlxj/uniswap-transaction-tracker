@@ -1,14 +1,18 @@
 import React, { useState, useEffect } from 'react'
+import axios from 'axios'
 
 function App() {
-  const [data1, setData1] = useState([])
+  const [txns, setTxns] = useState([])
+  const [ethPrice, setEthPrice] = useState(null)
+
   useEffect(() => {
-    fetch('/api')
-      .then(res => res.json())
-      .then(data => {
-        setData1(data)
-        console.log(data)
-      })
+    axios.get('/api/txns')
+      .then(res => setTxns(res.data.result))
+      .catch(err => console.error(err));
+
+    axios.get('/api/eth-now')
+      .then(res => setEthPrice(res.data.price))
+      .catch(err => console.error(err));
   },[])
   return (
     <div>
