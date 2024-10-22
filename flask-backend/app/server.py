@@ -12,6 +12,33 @@ BINANCE_API_URL = 'https://api.binance.com/api/v3/ticker/price?symbol=ETHUSDT'
 def create_tables():
     db.create_all()
 
+def get_historical_eth_price(timestamp):
+    ts = timestamp * 1000  # Convert to milliseconds
+    binance_api_url = f'https://api.binance.com/api/v3/klines?symbol=ETHUSDT&interval=1m&startTime={ts}&endTime={ts + 120000}'
+    
+    try:
+        response = requests.get(binance_api_url)
+        data = response.json()
+        
+        if data:
+            kline = data[0]  
+            open_time = kline[0]  # Opening time of the Kline
+            open_price = float(kline[1])  # Opening price
+            high_price = float(kline[2])  # Highest price
+            low_price = float(kline[3])  # Lowest price
+            close_price = float(kline[4])  # Closing price
+            
+            return close_price
+        else:
+            raise ValueError('No data available for the given timestamp.')
+    
+    except Exception as e:
+        print(f'Error: {e}')
+        return None
+def get_eth_price():
+    response = requests.get(BINANCE_API_URL)
+    return response.json().price
+
 # Fetch transactions from Etherscan API
 def fetch_transactions():
     url = f'https://api.etherscan.io/api?module=account&action=tokentx&address={UNISWAP_WETH_USDC_ADDRESS}&sort=desc&apikey={ETHERSCAN_API_KEY}'
@@ -69,9 +96,8 @@ def get_summary():
     })
 
 @app.route('/api/eth-now', methods=['GET'])
-def get_eth_price():
-    response = requests.get(BINANCE_API_URL)
-    return jsonify(response.json())
+def get_eth_now():
+    return jsonify({'price': get_eth_price()})
 
 if __name__ == '__main__':
     app.run(debug=True)
