@@ -24,7 +24,7 @@ function App() {
           pageSize: pageSize
         }
       });
-      setTxns(res.data.transactions);
+      setTxns(JSON.parse(res.data.transactions));
       setTotalTxns(res.data.total);
     } catch (err) {
       console.error('Error fetching transactions:', err);
@@ -106,21 +106,26 @@ function App() {
       {/* Transaction List */}
       <div>
         <h2>Transaction List</h2>
-        <table id="table" class="auto-index">
-            <tr>
-                <th>S.No</th>
-                <th>Txn Hash</th>
-                <th>Fee</th>
-                <th>Timestamp</th>
-            </tr>
+        <table id="table">
+          <thead>
+              <tr>
+                  <th>S.No</th>
+                  <th>Txn Hash</th>
+                  <th>Fee</th>
+                  <th>Timestamp</th>
+              </tr>
+          </thead>
+          <tbody>
+              {txns.map((txn, index) => (
+                  <tr key={txn.hash}>
+                      <td>{index + 1}</td> {/* S.No column */}
+                      <td>{txn.hash}</td> {/* Txn Hash column */}
+                      <td>{txn.fee_usdt}</td> {/* Fee column */}
+                      <td>{new Date(txn.timestamp * 1000).toLocaleString()}</td> {/* Timestamp column */}
+                  </tr>
+              ))}
+          </tbody>
         </table> 
-        <ul>
-          {txns.map((txn) => (
-            <li key={txn.hash}>
-              Txn Hash: {txn.hash}, Fee: {txn.gasUsed}, Timestamp: {new Date(txn.timeStamp * 1000).toLocaleString()}
-            </li>
-          ))}
-        </ul>
       </div>
 
       {/* Pagination Controls */}

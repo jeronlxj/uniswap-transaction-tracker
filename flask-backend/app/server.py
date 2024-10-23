@@ -2,11 +2,21 @@ from flask import request, jsonify
 from app import app, db
 from app.models import Transaction
 from datetime import datetime
-import requests
+import requests, json
 
 ETHERSCAN_API_KEY = 'MVAI2RH5N6QTIURJFMEYDGJ283ZA8YGJWN'
 UNISWAP_WETH_USDC_ADDRESS = '0x88e6a0c2ddd26feeb64f039a2c41296fcb3f5640'
 BINANCE_API_URL = 'https://api.binance.com/api/v3/ticker/price?symbol=ETHUSDT'
+
+class TransactionEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, Transaction):
+            return {
+                "hash": obj.hash,
+                "fee_usdt": obj.fee_usdt,
+                "timeStamp": int(obj.timestamp.timestamp()),
+            }
+        return super().default(obj)
 
 def get_historical_eth_price(timestamp):
     ts = timestamp * 1000  # Convert to milliseconds
@@ -94,32 +104,32 @@ def record_real_time_transactions():
 @app.route('/api/txns', methods=['GET'])
 def get_transactions():
     hash = request.args.get('hash', None)
-    start_date = request.args.get('startDate', None)
-    end_date = request.args.get('endDate', None)
+    start_time = request.args.get('startTime', None)
+    end_time = request.args.get('endTime', None)
     page = int(request.args.get('page', 1))
     page_size = int(request.args.get('pageSize', 50))
 
-    query = Transaction.query
+    print("page", page)
+    query = Transaction.query 
+    # print("query", query)
 
     if hash:
         query = query.filter(Transaction.hash == hash)
 
-    if start_date:
-        start_timestamp = datetime.strptime(start_date, "%Y-%m-%d").timestamp()
-        query = query.filter(Transaction.timestamp >= datetime.fromtimestamp(start_timestamp))
+    if start_time:
+        query = query.filter(Transaction.timestamp >= datetime.fromisoformat(start_time))
 
-    if end_date:
-        end_timestamp = datetime.strptime(end_date, "%Y-%m-%d").timestamp()
-        query = query.filter(Transaction.timestamp <= datetime.fromtimestamp(end_timestamp))
+    if end_time:
+        query = query.filter(Transaction.timestamp <= datetime.fromisoformat(end_time))
 
     total = query.count()
     transactions = query.order_by(Transaction.timestamp.desc()).offset((page - 1) * page_size).limit(page_size).all()
-
+    print(type(json.dumps(transactions, cls=TransactionEncoder)))
     return jsonify({
         'total': total,
         'page': page,
         'pageSize': page_size,
-        'transactions': transactions
+        'transactions': json.dumps(transactions, cls=TransactionEncoder),
     })
 
 @app.route('/api/batch', methods=['POST'])
