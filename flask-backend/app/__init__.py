@@ -11,9 +11,11 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 if not os.path.exists(os.path.join(BASE_DIR, "db")):
     os.makedirs(os.path.join(BASE_DIR, "db"))
 app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{os.path.join(BASE_DIR, "db", "uniswap.db")}'
+# app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {'echo': True}
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
+db.session_options = {'autoflush': False}
 from app.models import Transaction
 
 with app.app_context():
