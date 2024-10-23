@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import TransactionList from '../TransactionList'; // Adjust the import based on your structure
+import TransactionList from '../TransactionList'; 
 
 describe('TransactionList Component', () => {
     const mockTxns = [
@@ -9,7 +9,7 @@ describe('TransactionList Component', () => {
     ];
 
     test('renders transaction table with data', () => {
-        render(<TransactionList txns={mockTxns} />); // Pass mock data as props
+        render(<TransactionList txns={mockTxns} />); 
 
         expect(screen.getByText(/Txn Hash/i)).toBeInTheDocument();
         expect(screen.getByText(/0x123/i)).toBeInTheDocument();
