@@ -4,6 +4,7 @@ import axios from 'axios'
 function App() {
   const [txns, setTxns] = useState([])
   const [ethPrice, setEthPrice] = useState(null)
+  const [totalUSDT, setTotalUSDT] = useState(null)
   const [hash, setHash] = useState('');
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
@@ -39,6 +40,9 @@ function App() {
     axios.get('/api/eth-now')
       .then(res => setEthPrice(res.data.price))
       .catch(err => console.error(err));
+    axios.get('/api/summary')
+      .then(res => setTotalUSDT(res.data.totalusdt))
+      .catch(err => console.error(err));
   },[])
 
   // Handle search form submission
@@ -65,6 +69,8 @@ function App() {
       <div>
         <h2>Current ETH/USDT Price</h2>
         {ethPrice ? <p>{ethPrice}</p> : <p>Loading...</p>}
+        <h2>Total Transaction Fee in USDT</h2>
+        {totalUSDT ? <p>{totalUSDT}</p> : <p>Loading...</p>}
       </div>
 
       {/* Search Form */}

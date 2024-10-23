@@ -6,6 +6,8 @@ services:
       - "14381:14381" 
     volumes:
       - ./react-frontend:/app 
+    depends_on:   
+      - backend
   backend:
     build:
       context: ./flask-backend

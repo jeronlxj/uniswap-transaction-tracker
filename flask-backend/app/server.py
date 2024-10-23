@@ -4,7 +4,7 @@ from app.models import Transaction
 from datetime import datetime
 import requests
 
-ETHERSCAN_API_KEY = ''
+ETHERSCAN_API_KEY = 'MVAI2RH5N6QTIURJFMEYDGJ283ZA8YGJWN'
 UNISWAP_WETH_USDC_ADDRESS = '0x88e6a0c2ddd26feeb64f039a2c41296fcb3f5640'
 BINANCE_API_URL = 'https://api.binance.com/api/v3/ticker/price?symbol=ETHUSDT'
 
@@ -54,8 +54,9 @@ def save_transactions(transactions):
     db.session.commit()
 
 def record_real_time_transactions():
-    transactions = fetch_transactions()
-    save_transactions(transactions)
+    with app.app_context():
+        transactions = fetch_transactions()
+        save_transactions(transactions)
 
 @app.route('/api/txns', methods=['GET'])
 def get_transactions():
@@ -109,6 +110,3 @@ def get_summary():
 @app.route('/api/eth-now', methods=['GET'])
 def get_eth_now():
     return jsonify({'price': get_eth_price()})
-
-if __name__ == '__main__':
-    app.run(debug=True)
