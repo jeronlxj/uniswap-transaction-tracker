@@ -118,10 +118,10 @@ function App() {
           <tbody>
               {txns.map((txn, index) => (
                   <tr key={txn.hash}>
-                      <td>{index + 1}</td> {/* S.No column */}
-                      <td>{txn.hash}</td> {/* Txn Hash column */}
-                      <td>{txn.fee_usdt}</td> {/* Fee column */}
-                      <td>{new Date(txn.timestamp * 1000).toLocaleString()}</td> {/* Timestamp column */}
+                      <td>{index + 1}</td>
+                      <td>{txn.hash}</td>
+                      <td>{txn.fee_usdt}</td>
+                      <td>{new Date(txn.timestamp * 1000).toLocaleString()}</td>
                   </tr>
               ))}
           </tbody>
