@@ -14,7 +14,7 @@ class TransactionEncoder(json.JSONEncoder):
             return {
                 "hash": obj.hash,
                 "fee_usdt": obj.fee_usdt,
-                "timeStamp": int(obj.timestamp.timestamp()),
+                "timestamp": obj.timestamp.timestamp(),
             }
         return super().default(obj)
 
