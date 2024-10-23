@@ -61,6 +61,12 @@ function App() {
     <div>
       <h1>Dashboard for Uniswap WETH-USDC Transactions</h1>
       
+      {/* Stats */}
+      <div>
+        <h2>Current ETH/USDT Price</h2>
+        {ethPrice ? <p>{ethPrice}</p> : <p>Loading...</p>}
+      </div>
+
       {/* Search Form */}
       <form onSubmit={handleSubmit}>
         <div>

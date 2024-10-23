@@ -1,24 +1,19 @@
-version: '3.8'
 services:
   frontend:
     build:
-      context: ./frontend 
+      context: ./react-frontend 
     ports:
       - "14381:14381" 
     volumes:
-      - ./frontend:/app 
+      - ./react-frontend:/app 
   backend:
     build:
       context: ./flask-backend
     ports:
       - "5000:5000" 
     volumes:
-      - ./backend:/app
-
-  db: 
-    image: sqlite  
-    volumes:
-      - db_data:/data/db
+      - ./flask-backend:/app
+      - dbdata:/app/db
 
 volumes:
-  db_data:
+  dbdata:
