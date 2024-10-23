@@ -41,7 +41,7 @@ function App() {
       .then(res => setEthPrice(res.data.price))
       .catch(err => console.error(err));
     axios.get('/api/summary')
-      .then(res => setTotalUSDT(res.data.totalusdt))
+      .then(res => setTotalUSDT(res.data.total_usdt))
       .catch(err => console.error(err));
   },[])
 
@@ -118,7 +118,7 @@ function App() {
           <tbody>
               {txns.map((txn, index) => (
                   <tr key={txn.hash}>
-                      <td>{index + 1}</td>
+                      <td>{(page - 1) * pageSize + index + 1}</td>
                       <td>{txn.hash}</td>
                       <td>{txn.fee_usdt}</td>
                       <td>{new Date(txn.timestamp * 1000).toLocaleString()}</td>

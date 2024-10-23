@@ -160,13 +160,14 @@ def get_transaction_by_hash(txn_hash):
         return jsonify({
             'hash': transaction.hash,
             'fee_usdt': transaction.fee_usdt,
-            'timestamp': transaction.timestamp
+            'timestamp': transaction.timestamp.timestamp()
         })
     return jsonify({"error": "Transaction not found"}), 404
 
 @app.route('/api/summary', methods=['GET'])
 def get_summary():
     total_usdt = db.session.query(db.func.sum(Transaction.fee_usdt)).scalar() or 0
+    print("total_usdt", total_usdt)
     return jsonify({
         'total_usdt': total_usdt,
     })
