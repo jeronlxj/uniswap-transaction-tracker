@@ -8,13 +8,13 @@ app = Flask(__name__)
 CORS(app) 
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+if not os.path.exists(os.path.join(BASE_DIR, "db")):
+    os.makedirs(os.path.join(BASE_DIR, "db"))
 app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{os.path.join(BASE_DIR, "db", "uniswap.db")}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
-
-if not os.path.exists(os.path.join(BASE_DIR, "db")):
-    os.makedirs(os.path.join(BASE_DIR, "db"))
+from app.models import Transaction
 
 with app.app_context():
     db.create_all()
