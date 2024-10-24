@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import TransactionList from '../TransactionList'; 
+import App from '../App'; 
 
 describe('TransactionList Component', () => {
     const mockTxns = [
@@ -9,7 +9,7 @@ describe('TransactionList Component', () => {
     ];
 
     test('renders transaction table with data', () => {
-        render(<TransactionList txns={mockTxns} />); 
+        render(<App txns={mockTxns} />); 
 
         expect(screen.getByText(/Txn Hash/i)).toBeInTheDocument();
         expect(screen.getByText(/0x123/i)).toBeInTheDocument();
@@ -17,7 +17,7 @@ describe('TransactionList Component', () => {
     });
 
     test('displays correct fee and timestamp', () => {
-        render(<TransactionList txns={mockTxns} />);
+        render(<App txns={mockTxns} />);
 
         expect(screen.getByText(/21000/i)).toBeInTheDocument();
         expect(screen.getByText(/6\/1\/2021, 8:00:00 AM/i)).toBeInTheDocument();
